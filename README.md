@@ -11,7 +11,7 @@ python -m venv venv
 Install the required packages using the following command:
 
 ```bash
-pip install -e
+pip install -e .
 ```
 
 ## Run Federated Learning Environment
