@@ -1,0 +1,40 @@
+version: '3.8'
+
+services:
+  server:
+    build:
+      context: .
+      dockerfile: docker/server/Dockerfile
+    environment:
+      - WANDB_MODE=disabled
+    volumes:
+      - ./checkpoints:/app/checkpoints
+      - ./results:/app/results
+    ports:
+      - "8080:8080"
+    networks:
+      - fed_network
+    healthcheck:
+      test: ["CMD", "nc", "-z", "localhost", "8080"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+  client:
+    build:
+      context: .
+      dockerfile: docker/client/Dockerfile
+    depends_on:
+      server:
+        condition: service_healthy
+    environment:
+      - SERVER_URL=server:8080
+      - WANDB_MODE=disabled
+    networks:
+      - fed_network
+    deploy:
+      replicas: 5
+
+networks:
+  fed_network:
+    driver: bridge
