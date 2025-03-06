@@ -3,9 +3,9 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [project]
-name = "baseline"
+name = "FedAdaptiveDefense"
 version = "1.0.0"
-description = ""
+description = "A federated learning framework for adaptive defense."
 license = "Apache-2.0"
 dependencies = [
     "flwr[simulation]>=1.15.2",
