@@ -5,20 +5,46 @@ from flwr.server.strategy import FedAvg, Krum, FedMedian, FedTrimmedAvg
 
 import torch
 import json 
-import wandb
+import os
 from datetime import datetime
 
 from .task import Net, set_weights
 
+try:
+    import wandb
+    WANDB_AVAILABLE = True
+except ImportError:
+    WANDB_AVAILABLE = False
+
+# log to wandb if available and enabled
+def safe_wandb_log(metrics, step):
+    if WANDB_AVAILABLE and os.environ.get("WANDB_MODE") != "disabled":
+        try:
+            if wandb.run is None:
+                return
+            wandb.log(metrics, step=step)
+        except Exception as e:
+            print(f"Warning: wandb logging failed: {e}")
+
+# initialize wandb if available and not disabled
+def safe_wandb_init(name_prefix):
+    if not WANDB_AVAILABLE or os.environ.get("WANDB_MODE") == "disabled":
+        return
+    
+    try:
+        name = datetime.now().strftime("%Y-%m-%d_%H:%M:%S")
+        wandb.init(project="flower-simulation-baselines", name=f"{name_prefix}-{name}", mode="offline")
+    except Exception as e:
+        print(f"Warning: Could not initialize wandb: {e}")
+
+
 class CustomFedAvg(FedAvg):
     
     def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-
+        super().__init__(*args, **kwargs)        
         self.results_to_save = {}
-
-        name = datetime.now().strftime("%Y-%m-%d_%H:%M:%S")
-        wandb.init(project="flower-simulation-baselines", name=f"custom-FedAvg-{name}")
+        
+        safe_wandb_init("custom-FedAvg")
 
     def aggregate_fit(self, server_round, results, failures):
         parameters_aggregated, metrics_aggregated = super().aggregate_fit(server_round, results, failures)
@@ -47,7 +73,7 @@ class CustomFedAvg(FedAvg):
             json.dump(self.results_to_save, json_file, indent=4)
 
         # Log to wandb
-        wandb.log(results, step=server_round)
+        safe_wandb_log(results, step=server_round)
 
         return loss, metrics
     
@@ -58,8 +84,7 @@ class CustomKrum(Krum):
 
         self.results_to_save = {}
 
-        name = datetime.now().strftime("%Y-%m-%d_%H:%M:%S")
-        wandb.init(project="flower-simulation-baselines", name=f"custom-Krum-{name}")
+        safe_wandb_init("custom-Krum")
 
     def aggregate_fit(self, server_round, results, failures):
         parameters_aggregated, metrics_aggregated = super().aggregate_fit(server_round, results, failures)
@@ -88,7 +113,7 @@ class CustomKrum(Krum):
             json.dump(self.results_to_save, json_file, indent=4)
 
         # Log to wandb
-        wandb.log(results, step=server_round)
+        safe_wandb_log(results, step=server_round)
 
         return loss, metrics
 
@@ -99,8 +124,7 @@ class CustomFedMedian(FedMedian):
 
         self.results_to_save = {}
 
-        name = datetime.now().strftime("%Y-%m-%d_%H:%M:%S")
-        wandb.init(project="flower-simulation-baselines", name=f"custom-FedMedian-{name}")
+        safe_wandb_init("custom-FedMedian")
 
     def aggregate_fit(self, server_round, results, failures):
         parameters_aggregated, metrics_aggregated = super().aggregate_fit(server_round, results, failures)
@@ -129,7 +153,7 @@ class CustomFedMedian(FedMedian):
             json.dump(self.results_to_save, json_file, indent=4)
 
         # Log to wandb
-        wandb.log(results, step=server_round)
+        safe_wandb_log(results, step=server_round)
 
         return loss, metrics
     
@@ -141,7 +165,7 @@ class CustomFedTrimmedAvg(FedTrimmedAvg):
         self.results_to_save = {}
 
         name = datetime.now().strftime("%Y-%m-%d_%H:%M:%S")
-        wandb.init(project="flower-simulation-baselines", name=f"custom-FedTrimmedAvg-{name}")
+        safe_wandb_init("custom-FedTrimmedAvg")
 
     def aggregate_fit(self, server_round, results, failures):
         parameters_aggregated, metrics_aggregated = super().aggregate_fit(server_round, results, failures)
@@ -170,6 +194,6 @@ class CustomFedTrimmedAvg(FedTrimmedAvg):
             json.dump(self.results_to_save, json_file, indent=4)
 
         # Log to wandb
-        wandb.log(results, step=server_round)
+        safe_wandb_log(results, step=server_round)
 
         return loss, metrics
