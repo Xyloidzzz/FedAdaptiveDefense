@@ -16,6 +16,7 @@ class CustomFedAvg(FedAvg):
         super().__init__(*args, **kwargs)
 
         self.results_to_save = {}
+        self.strategy_name = "FedAvg"
 
         name = datetime.now().strftime("%Y-%m-%d_%H:%M:%S")
         wandb.init(project="flower-simulation-baselines", name=f"custom-FedAvg-{name}")
@@ -40,7 +41,7 @@ class CustomFedAvg(FedAvg):
 
         results = {"loss": loss, **metrics}
         
-        self.results_to_save[server_round] = results
+        self.results_to_save[f"{self.strategy_name}_round_{server_round}"] = results
 
         #save metrics as json
         with open("results/results.json", 'w') as json_file:
@@ -57,6 +58,7 @@ class CustomKrum(Krum):
         super().__init__(*args, **kwargs)
 
         self.results_to_save = {}
+        self.strategy_name = "Krum"
 
         name = datetime.now().strftime("%Y-%m-%d_%H:%M:%S")
         wandb.init(project="flower-simulation-baselines", name=f"custom-Krum-{name}")
@@ -81,7 +83,7 @@ class CustomKrum(Krum):
 
         results = {"loss": loss, **metrics}
         
-        self.results_to_save[server_round] = results
+        self.results_to_save[f"{self.strategy_name}_round_{server_round}"] = results
 
         #save metrics as json
         with open("results/results.json", 'w') as json_file:
@@ -98,6 +100,7 @@ class CustomFedMedian(FedMedian):
         super().__init__(*args, **kwargs)
 
         self.results_to_save = {}
+        self.strategy_name = "FedMedian"
 
         name = datetime.now().strftime("%Y-%m-%d_%H:%M:%S")
         wandb.init(project="flower-simulation-baselines", name=f"custom-FedMedian-{name}")
@@ -122,7 +125,7 @@ class CustomFedMedian(FedMedian):
 
         results = {"loss": loss, **metrics}
         
-        self.results_to_save[server_round] = results
+        self.results_to_save[f"{self.strategy_name}_round_{server_round}"] = results
 
         #save metrics as json
         with open("results/results.json", 'w') as json_file:
@@ -139,6 +142,7 @@ class CustomFedTrimmedAvg(FedTrimmedAvg):
         super().__init__(*args, **kwargs)
 
         self.results_to_save = {}
+        self.strategy_name = "FedTrimmedAvg"
 
         name = datetime.now().strftime("%Y-%m-%d_%H:%M:%S")
         wandb.init(project="flower-simulation-baselines", name=f"custom-FedTrimmedAvg-{name}")
@@ -163,7 +167,7 @@ class CustomFedTrimmedAvg(FedTrimmedAvg):
 
         results = {"loss": loss, **metrics}
         
-        self.results_to_save[server_round] = results
+        self.results_to_save[f"{self.strategy_name}_round_{server_round}"] = results
 
         #save metrics as json
         with open("results/results.json", 'w') as json_file:
