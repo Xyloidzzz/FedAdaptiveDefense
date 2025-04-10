@@ -19,27 +19,23 @@ for key in sorted(results.keys()):
     losses.append(results[key]['loss'])
     accuracies.append(results[key]['cen_accuracy'])
 
-# Create figure with two subplots
-fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(10, 8))
-fig.suptitle(f'Training Results for {strategy_name}', fontsize=16)
+# Create loss plot
+plt.figure(1, figsize=(10, 6))
+plt.plot(rounds, losses, 'b-o')
+plt.xlabel('Round')
+plt.ylabel('Loss')
+plt.title(f'Loss vs. Round for {strategy_name}')
+plt.grid(True)
+plt.savefig(f'results/{strategy_name}_loss.png')
 
-# Plot loss
-ax1.plot(rounds, losses, 'b-o')
-ax1.set_xlabel('Round')
-ax1.set_ylabel('Loss')
-ax1.set_title('Loss vs. Round')
-ax1.grid(True)
+# Create accuracy plot
+plt.figure(2, figsize=(10, 6))
+plt.plot(rounds, accuracies, 'r-o')
+plt.xlabel('Round')
+plt.ylabel('Accuracy')
+plt.title(f'Accuracy vs. Round for {strategy_name}')
+plt.grid(True)
+plt.savefig(f'results/{strategy_name}_accuracy.png')
 
-# Plot accuracy
-ax2.plot(rounds, accuracies, 'r-o')
-ax2.set_xlabel('Round')
-ax2.set_ylabel('Accuracy')
-ax2.set_title('Accuracy vs. Round')
-ax2.grid(True)
-
-# Adjust layout to prevent overlap
-plt.tight_layout()
-
-# Save the plot
-plt.savefig(f'results/{strategy_name}_results.png')
+# Show all plots
 plt.show()
